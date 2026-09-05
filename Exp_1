@@ -1,0 +1,223 @@
+/////------------------------------ Merge Sort --------------------------------/////
+
+#include <iostream>
+using namespace std;
+
+void merge(int arr[], int l, int m, int r) {
+    int n1 = m - l + 1, n2 = r - m, i = 0, j = 0, k = l;
+    int *L = new int[n1], *R = new int[n2];
+    
+    for (int x = 0; x < n1; x++) L[x] = arr[l + x];
+    for (int x = 0; x < n2; x++) R[x] = arr[m + 1 + x];
+
+    while (i < n1 && j < n2) arr[k++] = (L[i] <= R[j]) ? L[i++] : R[j++];
+    while (i < n1) arr[k++] = L[i++];
+    while (j < n2) arr[k++] = R[j++];
+
+    delete[] L; delete[] R;
+}
+
+void mergeSort(int arr[], int l, int r) {
+    if (l < r) {
+        int m = l + (r - l) / 2;
+        mergeSort(arr, l, m);
+        mergeSort(arr, m + 1, r);
+        merge(arr, l, m, r);
+    }
+}
+
+int main() {
+    int n;
+    cout << "Size: "; cin >> n;
+    int* arr = new int[n];
+    
+    cout << "Elements: ";
+    for (int i = 0; i < n; i++) cin >> arr[i];
+
+    mergeSort(arr, 0, n - 1);
+
+    cout << "Sorted: ";
+    for (int i = 0; i < n; i++) cout << arr[i] << " ";
+    
+    delete[] arr;
+    return 0;
+}
+
+
+
+
+/////--------------------------------------- Quick Sort ----------------------------------------/////
+
+#include <iostream>
+using namespace std;
+
+int partition(int arr[], int low, int high) {
+    int pivot = arr[high];
+    int i = low - 1;
+
+    for (int j = low; j < high; ++j) {
+        if (arr[j] < pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    swap(arr[i + 1], arr[high]);
+    return i + 1;
+}
+
+void quickSort(int arr[], int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+
+int main() {
+    int n;
+    cout << "Enter the size of the array: ";
+    cin >> n;
+
+    int* arr = new int[n];
+    cout << "Enter " << n << " elements: ";
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+
+    quickSort(arr, 0, n - 1);
+
+    cout << "Sorted array: ";
+    for (int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+
+    delete[] arr;
+    return 0;
+}
+
+
+
+
+/////------------------------------------------------ Bubble Sort -------------------------------------------/////
+
+#include <iostream>
+using namespace std;
+int main() {
+    int arr[] = {64, 34, 25, 12, 22, 11, 90};
+    int n = 7;
+    for (int i=0;i<n;i++){
+        for(int j=0;j<n-i-1;j++){
+            if(arr[j] > arr[j+1]){
+                int temp =arr[j];
+                arr[j]= arr[j+1];
+                arr[j+1]=temp;
+            }
+        }    
+    }
+cout << "Sorted array: ";
+    for (int i = 0; i < n; i++) {
+        std::cout << arr[i] << " ";
+    }
+    std::cout << std::endl;
+
+    return 0;
+}
+
+
+
+
+/////----------------------------------------------- Selection Sort --------------------------------------------/////
+
+#include <iostream>
+using namespace std;
+
+void selectionSort(int arr[], int n) {
+    for (int i = 0; i < n - 1; ++i) {
+        int minIndex = i;
+        for (int j = i + 1; j < n; ++j) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+        swap(arr[i], arr[minIndex]);
+    }
+}
+
+int main() {
+    int n;
+    cout << "Enter the size of the array: ";
+    cin >> n;
+
+    int* arr = new int[n];
+    cout << "Enter " << n << " elements: ";
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+
+    selectionSort(arr, n);
+
+    cout << "Sorted array: ";
+    for (int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+
+    delete[] arr;
+    return 0;
+}
+
+
+
+
+/////------------------------------------------------ Heap Sort ----------------------------------------------------/////
+
+#include <iostream>
+using namespace std;
+
+void heapify(int arr[], int n, int rootIndex) {
+    int largest = rootIndex;       
+    int leftChild = 2 * rootIndex + 1;  
+    int rightChild = 2 * rootIndex + 2; 
+
+    if (leftChild < n && arr[leftChild] > arr[largest]) {
+        largest = leftChild;
+    }
+
+    if (rightChild < n && arr[rightChild] > arr[largest]) {
+        largest = rightChild;
+    }
+
+    if (largest != rootIndex) {
+        int temp = arr[rootIndex];
+        arr[rootIndex] = arr[largest];
+        arr[largest] = temp;
+
+        heapify(arr, n, largest);
+    }
+}
+
+int main() {
+    int arr[] = {64, 34, 25, 12, 22, 11, 90};
+    int n = 7;
+
+    for (int i = n / 2 - 1; i >= 0; i--) {
+        heapify(arr, n, i);
+    }
+
+    for (int i = n - 1; i > 0; i--) {
+        int temp = arr[0];
+        arr[0] = arr[i];
+        arr[i] = temp;
+
+        heapify(arr, i, 0);
+    }
+
+    cout << "Sorted array using Heap Sort: ";
+    for (int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
