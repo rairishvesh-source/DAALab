@@ -1,0 +1,156 @@
+#include <iostream>
+
+using namespace std;
+
+const int V_PRIM = 5;    
+const int V_KRUSKAL = 4; 
+const int E_KRUSKAL = 5; 
+
+struct Edge {
+    int src, dest, weight;
+};
+
+// ============================================================================
+// PRIM'S ALGORITHM (Vertex-centric: Grows a single tree outward from a root)
+// ============================================================================
+
+int findMinKey(int key[], bool mstSet[]) {
+    int minWeight = 2147483647; 
+    int minIndex = -1;
+
+    for (int v = 0; v < V_PRIM; v++) {
+        if (mstSet[v] == false && key[v] < minWeight) {
+            minWeight = key[v];
+            minIndex = v;
+        }
+    }
+    return minIndex;
+}
+
+void runPrim(int graph[V_PRIM][V_PRIM]) {
+    int parent[V_PRIM];  
+    int key[V_PRIM];     
+    bool mstSet[V_PRIM]; 
+
+    for (int i = 0; i < V_PRIM; i++) {
+        key[i] = 2147483647; 
+        mstSet[i] = false;
+    }
+
+    key = 0;
+    parent = -1; 
+
+    for (int count = 0; count < V_PRIM - 1; count++) {
+        int u = findMinKey(key, mstSet);
+        mstSet[u] = true;
+
+        for (int v = 0; v < V_PRIM; v++) {
+            if (graph[u][v] != 0 && mstSet[v] == false && graph[u][v] < key[v]) {
+                parent[v] = u;
+                key[v] = graph[u][v];
+            }
+        }
+    }
+
+    cout << "--- Prim's Algorithm MST ---\n";
+    cout << "Edge \tWeight\n";
+    int totalCost = 0;
+    for (int i = 1; i < V_PRIM; i++) {
+        cout << parent[i] << " - " << i << " \t" << graph[parent[i]][i] << " \n";
+        totalCost += graph[parent[i]][i];
+    }
+    cout << "Total Minimum Cost (Prim): " << totalCost << "\n\n";
+}
+
+// ============================================================================
+// KRUSKAL'S ALGORITHM (Edge-centric: Sorts all edges and avoids cycles)
+// ============================================================================
+
+void bubbleSort(Edge edges[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (edges[j].weight > edges[j + 1].weight) {
+                Edge temp = edges[j];
+                edges[j] = edges[j + 1];
+                edges[j + 1] = temp;
+            }
+        }
+    }
+}
+
+int findRoot(int parent[], int i) {
+    if (parent[i] == i)
+        return i;
+    return parent[i] = findRoot(parent, parent[i]); 
+}
+
+void unionSets(int parent[], int x, int y) {
+    int rootX = findRoot(parent, x);
+    int rootY = findRoot(parent, y);
+    if (rootX != rootY) {
+        parent[rootX] = rootY;
+    }
+}
+
+void runKruskal(Edge edges[]) {
+    Edge result[V_KRUSKAL - 1]; 
+    int resultCount = 0;
+
+    bubbleSort(edges, E_KRUSKAL);
+
+    int parent[V_KRUSKAL];
+    for (int i = 0; i < V_KRUSKAL; i++) {
+        parent[i] = i; 
+    }
+
+    for (int i = 0; i < E_KRUSKAL; i++) {
+        int rootSrc = findRoot(parent, edges[i].src);
+        int rootDest = findRoot(parent, edges[i].dest);
+
+        if (rootSrc != rootDest) {
+            result[resultCount] = edges[i];
+            resultCount++;
+            unionSets(parent, rootSrc, rootDest);
+        }
+
+        if (resultCount == V_KRUSKAL - 1) {
+            break;
+        }
+    }
+
+    cout << "--- Kruskal's Algorithm MST ---\n";
+    cout << "Edge \tWeight\n";
+    int totalCost = 0;
+    for (int i = 0; i < resultCount; i++) {
+        cout << result[i].src << " - " << result[i].dest << " \t" << result[i].weight << "\n";
+        totalCost += result[i].weight;
+    }
+    cout << "Total Minimum Cost (Kruskal): " << totalCost << "\n";
+}
+
+// ============================================================================
+// MAIN EXECUTION
+// ============================================================================
+
+int main() {
+    int primGraph[V_PRIM][V_PRIM] = {
+        {0, 2, 0, 6, 0},
+        {2, 0, 3, 8, 5},
+        {0, 3, 0, 0, 7},
+        {6, 8, 0, 0, 9},
+        {0, 5, 7, 9, 0}
+    };
+
+    Edge kruskalEdges[E_KRUSKAL] = {
+        {0, 1, 10},
+        {0, 2, 6},
+        {0, 3, 5},
+        {1, 3, 15},
+        {2, 3, 4}
+    };
+
+    runPrim(primGraph);
+    runKruskal(kruskalEdges);
+
+    return 0;
+}
